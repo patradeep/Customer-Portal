@@ -8,47 +8,26 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const login = async (username, password) => {
-    const cleanUser = username.trim();
-    const cleanPass = password.trim();
-
-    // 1. Check Admin Credentials
-    if (cleanUser === 'admin' && cleanPass === 'admin123') {
-      const adminProfile = {
-        id: 'admin',
-        username: 'admin',
-        firstName: 'System',
-        lastName: 'Admin',
-        role: 'admin',
-      };
-      localStorage.setItem('user', JSON.stringify(adminProfile));
-      setCurrentUser(adminProfile);
-      return { success: true, role: 'admin' };
-    }
-
-    // 2. Check Customer Credentials from DummyJSON
-    try {
-      const res = await fetch(`https://dummyjson.com/users/search?q=${cleanUser}`);
-      const data = await res.json();
-
-      const matchedUser = data.users.find(
-        (u) =>
-          (u.username.toLowerCase() === cleanUser.toLowerCase() ||
-           u.email.toLowerCase() === cleanUser.toLowerCase()) &&
-          u.password === cleanPass
-      );
-
-      if (!matchedUser) {
-        return { success: false, message: 'Invalid credentials.' };
+  const login = async (loginid, password,role) => {
+    try{
+      const response = await fetch(`https://dummyjson.com/users/${loginid}`);
+      if(!response.ok){
+        throw new Error('User not found');
       }
-
-      // Tag as regular user
-      const userProfile = { ...matchedUser, role: 'user' };
-      localStorage.setItem('user', JSON.stringify(userProfile));
-      setCurrentUser(userProfile);
-      return { success: true, role: 'user', id: userProfile.id };
-    } catch {
-      return { success: false, message: 'Login failed. Try again.' };
+      const data = await response.json();
+      if(data.password === password){
+        if(role === 'admin' && data.role !== 'admin'){
+          throw new Error('You are not authorized to login as admin');
+        }
+        setCurrentUser(data);
+        localStorage.setItem('user', JSON.stringify(data));
+        return { success: true , id:data.id};
+      }
+      else{
+        throw new Error('Invalid password');
+      }
+    }catch(error){
+      return { success: false, message: error.message };
     }
   };
 

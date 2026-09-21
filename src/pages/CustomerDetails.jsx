@@ -1,60 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar";
 
 export default function CustomerDetails() {
+
   const { id } = useParams();
+
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+
   const [customer, setCustomer] = useState(null);
 
   useEffect(() => {
 
-    const targetId = currentUser?.role === 'user' ? currentUser.id : id;
-
-    fetch(`https://dummyjson.com/users/${targetId}`)
+    fetch(`https://dummyjson.com/users/${id}`)
       .then((res) => res.json())
       .then((data) => setCustomer(data));
-  }, [id, currentUser]);
+  }, [id]);
 
-  if (!customer) return <div className="p-8 text-center text-sm">Loading details...</div>;
+  if (!customer) {
+    return <div className="p-8 text-center text-sm">Loading details...</div>;
+  }
 
   return (
-    <div className="max-w-xl mx-auto p-6 space-y-4">
-      {/* Dynamic Header: Admin sees "Back to Dashboard", User sees "Logout" */}
-      <div className="flex justify-between items-center">
-        {currentUser?.role === 'admin' ? (
-          <button onClick={() => navigate('/dashboard')} className="text-xs text-blue-600 underline font-medium">
-            ← Back to Dashboard
-          </button>
-        ) : (
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">My Account</span>
-        )}
-
-        <button onClick={logout} className="text-xs border border-slate-300 px-3 py-1 rounded hover:bg-slate-100">
-          Logout
-        </button>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg border shadow-sm space-y-3 text-sm">
-        <div className="flex items-center gap-4 border-b pb-4">
-          <img src={customer.image} alt="" className="w-16 h-16 rounded-full border bg-slate-100" />
-          <div>
-            <h2 className="font-bold text-lg">{customer.firstName} {customer.lastName}</h2>
-            <p className="text-slate-500 text-xs">{customer.email}</p>
+    <div>
+      <NavBar />
+      <button className="p-2 bg-slate-100 rounded-md m-5 cursor-pointer hover:bg-slate-200" onClick={() => navigate(-1)}>Back</button>
+        <div className="flex flex-col p-4 rounded-md">
+          <div className="flex items-center">
+            <img src={customer.image} alt="" className="w-24 h-24 rounded-full" />
+            <div className="flex flex-col gap-2 pl-4">
+              <div className="font-medium text-lg">{customer.firstName} {customer.lastName}</div>
+              <div className="text-gray-600 text-sm">{customer.role} id : {customer.id}</div>
+            </div>
           </div>
-        </div>
-        <p><span className="font-semibold text-slate-600">Phone:</span> {customer.phone}</p>
-        <p><span className="font-semibold text-slate-600">Age </span> {customer.age}</p>
-        <p><span className="font-semibold text-slate-600">Gender </span>{customer.gender}</p>
-        <p><span className="font-semibold text-slate-600">Company:</span> {customer.company?.name} ({customer.company?.title})</p>
-        <p><span className="font-semibold text-slate-600">Address:</span> {customer.address?.address}, {customer.address?.city}</p>
-        <p><span className="font-semibold text-slate-600">Bank Card:</span> {customer.bank?.cardType} (Expires: {customer.bank?.cardExpire})</p>
-      </div>
 
-      <div>
-        
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-4">
+
+            {/* Contact Info Section */}
+          <div className="py-4 px-6 rounded-md bg-slate-50 border border-slate-200">
+            <h2 className="font-semibold text-sm text-gray-600">Contact Info</h2>
+            <div className="text-gray-600 text-sm">Email : {customer.email}</div>
+            <div className="text-gray-600 text-sm">Phone : {customer.phone}</div>
+          </div>
+
+          {/* address section */}
+          <div className="py-4 px-6 rounded-md bg-slate-50 border border-slate-200">
+            <h2 className="font-semibold text-sm text-gray-600">Address</h2>
+            <div className="text-gray-600 text-sm">Address : {customer.address?.address}</div>
+            <div className="text-gray-600 text-sm">City : {customer.address?.city}</div>
+            <div className="text-gray-600 text-sm">State : {customer.address?.state}</div>
+            <div className="text-gray-600 text-sm">Zip : {customer.address?.postalCode}</div>
+          </div>
+
+          {/* Company Info section */}
+          <div className="py-4 px-6 rounded-md bg-slate-50 border border-slate-200">
+            <h2 className="font-semibold text-sm text-gray-600">Company Info</h2>
+            <div className="text-gray-600 text-sm">Company : {customer.company?.name}</div>
+            <div className="text-gray-600 text-sm">Department : {customer.company?.department}</div>
+            <div className="text-gray-600 text-sm">Title : {customer.company?.title}</div>
+            <div className="text-gray-600 text-sm">Address : {customer.company?.address?.address}</div>
+            <div className="text-gray-600 text-sm">City : {customer.company?.address?.city}</div>
+            <div className="text-gray-600 text-sm">State : {customer.company?.address?.state}</div>
+            <div className="text-gray-600 text-sm">Zip : {customer.company?.address?.postalCode}</div>
+          </div>
+
+          {/* Bank info section */}
+          <div className="py-4 px-6 rounded-md bg-slate-50 border border-slate-200">
+            <h2 className="font-semibold text-sm text-gray-600">Bank Info</h2>
+            <div className="text-gray-600 text-sm">Card Type : {customer.bank.cardType}</div>
+            <div className="text-gray-600 text-sm">Card Number : {customer.bank.cardNumber}</div>
+            <div className="text-gray-600 text-sm">Currency : {customer.bank.currency}</div>
+            <div className="text-gray-600 text-sm">Expiry Date : {customer.bank.cardExpire}</div>
+            <div className="text-gray-600 text-sm">IBAN : {customer.bank.iban}</div>
+          </div>
+
+          </div>
+
+          
+
+        </div>
       </div>
-    </div>
-  );
+  )
 }

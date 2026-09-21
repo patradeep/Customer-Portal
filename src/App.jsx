@@ -5,7 +5,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminRoute } from './components/AdminRoute';
 
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
 import CustomerDetails from './pages/CustomerDetails';
 
 function RootRedirect() {
@@ -27,7 +28,7 @@ export default function App() {
             path="/dashboard"
             element={
               <AdminRoute>
-                <Dashboard />
+                <AdminDashboard />
               </AdminRoute>
             }
           />
@@ -35,8 +36,17 @@ export default function App() {
           <Route
             path="/customers/:id"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <CustomerDetails />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/customerdashboard/:id"
+            element={
+              <ProtectedRoute>
+                <CustomerDashboard />
               </ProtectedRoute>
             }
           />

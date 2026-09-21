@@ -9,7 +9,7 @@ export const AdminRoute = ({ children }) => {
   
 
   if (currentUser.role !== 'admin') {
-    return <Navigate to={`/customers/${currentUser.id}`} replace />;
+    return <Navigate to={`/customerdashboard/${currentUser.id}`} replace />;
   }
 
   return children;
